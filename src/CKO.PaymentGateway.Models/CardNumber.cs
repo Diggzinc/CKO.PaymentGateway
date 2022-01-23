@@ -13,7 +13,7 @@ namespace CKO.PaymentGateway.Models;
 /// account vendor specific format requirements which should be validated before hand since 
 /// they are too big and error prone to be captured within the context of the domain model.
 /// </remarks>
-public record CardNumber
+public sealed record CardNumber
 {
     /// <summary>
     /// The card number string value.

@@ -1,20 +1,18 @@
-﻿namespace CKO.PaymentGateway.Models.Exceptions;
+namespace CKO.PaymentGateway.Models.Exceptions;
 
 /// <summary>
 /// The invalid card expiry date exception.
 /// </summary>
-public class InvalidCardExpiryDateException : Exception
+public sealed class InvalidCardExpiryDateException : BusinessException
 {
     /// <summary>
     /// Gets the invalid month.
     /// </summary>
-    /// <value>A byte with the possibly invalid month.</value>
     public byte InvalidMonth { get; }
 
     /// <summary>
     /// Gets the invalid month.
     /// </summary>
-    /// <value>A byte with the possibly invalid year.</value>
     public byte InvalidYear { get; }
 
 

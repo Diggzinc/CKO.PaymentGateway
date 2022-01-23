@@ -1,20 +1,18 @@
-﻿namespace CKO.PaymentGateway.Models.Exceptions;
+namespace CKO.PaymentGateway.Models.Exceptions;
 
 /// <summary>
 /// The invalid payment charge exception.
 /// </summary>
-public class InvalidPaymentChargeException : Exception
+public sealed class InvalidPaymentChargeException : BusinessException
 {
     /// <summary>
     /// Gets the invalid amount.
     /// </summary>
-    /// <value>A decimal with the invalid amount.</value>
     public decimal InvalidAmount { get; }
 
     /// <summary>
     /// Gets the currency.
     /// </summary>
-    /// <value>A <see cref="Currency"/>.</value>
     public Currency Currency { get; }
 
 

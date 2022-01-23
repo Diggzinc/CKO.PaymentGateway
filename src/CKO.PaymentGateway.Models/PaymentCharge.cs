@@ -9,7 +9,7 @@ namespace CKO.PaymentGateway.Models;
 /// <remarks>
 /// The purpose of this record is mainly to counteract the Primitive Obsession code smell.
 /// </remarks>
-public record PaymentCharge
+public sealed record PaymentCharge
 {
     /// <summary>
     /// The payment charge amount component.

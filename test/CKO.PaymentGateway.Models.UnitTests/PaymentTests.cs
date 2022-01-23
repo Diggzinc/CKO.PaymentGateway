@@ -9,33 +9,30 @@ public class PaymentTests
     public void Should_Create_Payment()
     {
         // Arrange
-        var card = new Card
-        (
-            Number: "1111 1111 1111 1111",
-            SecurityCode: "111",
-            ExpiryDate: new(1, 22),
-            Holder: "John Doe"
-        );
-
-        var charge = new PaymentCharge
-        (
-            amount: 100,
-            currency: Currency.EUR
-        );
-
         var paymentId = Guid.NewGuid();
+        var partialCardNumber = new PartialCardNumber("1111", 16);
+        var cardExpiryDate = new CardExpiryDate(1, 22);
+        var cardHolder = new CardHolder("John Doe");
+        var charge = new PaymentCharge(100, Currency.EUR);
+        var description = new PaymentDescription("some description");
 
         // Act
         var payment = new Payment
         (
             Id: paymentId,
-            Card: card,
-            Charge: charge
+            PartialCardNumber: partialCardNumber,
+            CardHolder: cardHolder,
+            CardExpiryDate: cardExpiryDate,
+            Charge: charge,
+            Description: description,
+            Records: Array.Empty<PaymentOperationRecord>()
         );
 
         // Assert
         Assert.Equal(paymentId, payment.Id);
-        Assert.Equal(card, payment.Card);
+        Assert.Equal(partialCardNumber, payment.PartialCardNumber);
+        Assert.Equal(cardHolder, payment.CardHolder);
+        Assert.Equal(cardExpiryDate, payment.CardExpiryDate);
         Assert.Equal(charge, payment.Charge);
     }
 }

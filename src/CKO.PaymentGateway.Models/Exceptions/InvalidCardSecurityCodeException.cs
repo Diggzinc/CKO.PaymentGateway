@@ -1,14 +1,13 @@
-﻿namespace CKO.PaymentGateway.Models.Exceptions;
+namespace CKO.PaymentGateway.Models.Exceptions;
 
 /// <summary>
 /// The invalid card security code exception.
 /// </summary>
-public class InvalidCardSecurityCodeException : Exception
+public sealed class InvalidCardSecurityCodeException : BusinessException
 {
     /// <summary>
     /// Gets the invalid card security code.
     /// </summary>
-    /// <value>A string with the invalid card security code.</value>
     public string? InvalidSecurityCode { get; }
 
     /// <summary>

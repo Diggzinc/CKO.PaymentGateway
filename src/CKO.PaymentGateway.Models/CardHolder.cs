@@ -9,10 +9,10 @@ namespace CKO.PaymentGateway.Models;
 /// <remarks>
 /// The purpose of this record is mainly to counteract the Primitive Obsession code smell.
 /// The validation of the card holder name domain idea in itself is rather lax here, working under 
-/// the assumption that a name must exist at the very least.
+/// the assumption that a name must exist at the very least and be under 255 characters.
 /// Due to the nature of complexity regarding name validation it should not be handled by the model itself.
 /// </remarks>
-public record CardHolder
+public sealed record CardHolder
 {
     /// <summary>
     /// String representation of the card holders name.
@@ -37,7 +37,8 @@ public record CardHolder
     /// <exception cref="InvalidCardHolderException">The exception in case the card holders name is considered invalid.</exception>
     private static void Validate(string name)
     {
-        if (string.IsNullOrWhiteSpace(name))
+        const int maximumAllowedLength = 255;
+        if (string.IsNullOrWhiteSpace(name) || name.Length > maximumAllowedLength)
         {
             throw new InvalidCardHolderException(name, "Provided card holder's name cannot be NULL or whitespace.");
         }

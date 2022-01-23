@@ -46,7 +46,7 @@ public readonly record struct Currency
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Currency"/> record.
-    /// Defaults to <see cref="Currency.EUR"/>.
+    /// Defaults to <see cref="EUR"/>.
     /// </summary>
     public Currency() : this(EUR.Entity, EUR.AlphabeticCode, EUR.NumericCode, EUR.MinorUnit)
     {

@@ -10,7 +10,7 @@ namespace CKO.PaymentGateway.Models;
 /// <remarks>
 /// The purpose of this record is mainly to counteract the Primitive Obsession code smell.
 /// </remarks>
-public record CardSecurityCode
+public sealed record CardSecurityCode
 {
     /// <summary>
     /// The card security code string value.

@@ -13,7 +13,7 @@ namespace CKO.PaymentGateway.Models;
 /// nature of complexity regarding time validation, which similar to the card number should most
 /// likely be handled on it's own and not by the model itself.
 /// </remarks>
-public record CardExpiryDate
+public sealed record CardExpiryDate
 {
     /// <summary>
     /// The <see cref="CardExpiryDate"/> Month component.

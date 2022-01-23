@@ -1,14 +1,13 @@
-﻿namespace CKO.PaymentGateway.Models.Exceptions;
+namespace CKO.PaymentGateway.Models.Exceptions;
 
 /// <summary>
 /// The invalid card number exception.
 /// </summary>
-public class InvalidCardNumberException : Exception
+public sealed class InvalidCardNumberException : BusinessException
 {
     /// <summary>
     /// Gets the invalid card number.
     /// </summary>
-    /// <value>A string with the invalid card number.</value>
     public string? InvalidCardNumber { get; }
 
     /// <summary>

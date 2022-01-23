@@ -1,3 +1,4 @@
+using System.Linq;
 using CKO.PaymentGateway.Models.Exceptions;
 using Xunit;
 
@@ -9,9 +10,22 @@ public class CardHolderTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
-    public void Should_Throw_Excepted_Exception_When_CardHolder_Is_Invalid(string invalidName)
+    public void Should_Throw_Excepted_Exception_When_CardHolder_Is_Invalid_1(string invalidName)
     {
         // Arrange
+        // Act
+        void Action() => _ = new CardHolder(invalidName);
+
+        // Assert
+        var exception = Assert.Throws<InvalidCardHolderException>(Action);
+        Assert.Equal(invalidName, exception.InvalidName);
+    }
+
+    [Fact]
+    public void Should_Throw_Excepted_Exception_When_CardHolder_Is_Invalid_2()
+    {
+        // Arrange
+        var invalidName = string.Join(string.Empty, Enumerable.Repeat("a", 256));
         // Act
         void Action() => _ = new CardHolder(invalidName);
 

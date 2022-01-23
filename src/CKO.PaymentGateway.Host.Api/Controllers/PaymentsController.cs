@@ -47,9 +47,21 @@ namespace CKO.PaymentGateway.Host.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ProcessPaymentAsync(CancellationToken cancellationToken = default)
+        public async Task<IActionResult> ProcessPaymentAsync(ProcessPaymentJsonRequest CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var request = new ProcessPaymentRequest(id);
+            var response = await _mediator.Send(request, cancellationToken);
+
+            var actionResult = response.Match<IActionResult>(
+                                            error => error switch
+                                            {
+                                                PaymentNotFoundError p => NotFound(),
+                                                _ => throw new NotImplementedException()
+                                            },
+                                            payment => Ok()
+                               );
+
+            return actionResult;
         }
     }
 }

@@ -8,7 +8,7 @@ namespace CKO.PaymentGateway.Models;
 /// <param name="SecurityCode">The card security code.</param>
 /// <param name="ExpiryDate">The card expiry date.</param>
 /// <param name="Holder">The card holder.</param>
-public record Card(
+public sealed record Card(
     CardNumber Number,
     CardSecurityCode SecurityCode,
     CardExpiryDate ExpiryDate,
