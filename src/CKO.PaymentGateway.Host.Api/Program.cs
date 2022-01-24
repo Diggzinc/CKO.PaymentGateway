@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using AcquiringBank.Api.Client;
 using CKO.PaymentGateway.Api.ViewModels;
 using CKO.PaymentGateway.Host.Api.Constants;
 using CKO.PaymentGateway.Services;
@@ -38,7 +39,7 @@ builder.Services
             ValidateIssuerSigningKey = true,
             IssuerSigningKey =
                 new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes("your-256-bit-secret")), 
+                    Encoding.UTF8.GetBytes("your-256-bit-secret")),
             ValidateIssuer = false,
             ValidateAudience = false,
             RequireExpirationTime = false,
@@ -54,6 +55,15 @@ builder.Services.AddApiVersioning(options =>
     options.DefaultApiVersion = new ApiVersion(1, 0);
     options.AssumeDefaultVersionWhenUnspecified = true;
 });
+
+// Add AcquiringBank Client
+builder.Services
+    .AddTransient<IAcquiringBankClient>(provider =>
+    {
+        var endpoint = "http://localhost:3001";
+        var apiKey = "some-api-key";
+        return new AcquiringBankApiClient(endpoint, apiKey);
+    });
 
 builder.Services
     .AddControllers()

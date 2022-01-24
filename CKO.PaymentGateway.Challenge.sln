@@ -22,6 +22,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CKO.PaymentGateway.Api.View
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CKO.PaymentGateway.Services", "src\CKO.PaymentGateway.Services\CKO.PaymentGateway.Services.csproj", "{4BBF89B1-59B4-41D6-89D7-83957FC7E68B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcquiringBank.Api.Client", "src\AcquiringBank.Api.Client\AcquiringBank.Api.Client.csproj", "{F8248603-9E60-4E8C-A9C8-408CF850E153}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External Libraries - NuGet", "External Libraries - NuGet", "{A59F0CCF-6488-41D5-8A11-DB42D9226D33}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,12 +56,17 @@ Global
 		{4BBF89B1-59B4-41D6-89D7-83957FC7E68B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4BBF89B1-59B4-41D6-89D7-83957FC7E68B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4BBF89B1-59B4-41D6-89D7-83957FC7E68B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8248603-9E60-4E8C-A9C8-408CF850E153}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8248603-9E60-4E8C-A9C8-408CF850E153}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8248603-9E60-4E8C-A9C8-408CF850E153}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8248603-9E60-4E8C-A9C8-408CF850E153}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{560C60DF-4EFE-4E80-B413-CC9F4C482575} = {8A4A9C80-3B01-42AC-AC08-4C7F4FBA1633}
+		{F8248603-9E60-4E8C-A9C8-408CF850E153} = {A59F0CCF-6488-41D5-8A11-DB42D9226D33}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7B5FC789-62AC-4243-9EF0-199F9338FBCC}

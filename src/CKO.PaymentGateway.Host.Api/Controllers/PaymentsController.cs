@@ -40,7 +40,7 @@ namespace CKO.PaymentGateway.Host.Api.Controllers
             _logger = logger;
         }
 
-        [HttpGet("{paymentId:guid}")]
+        [HttpGet("{paymentId:guid}", Name = nameof(RetrievePaymentAsync))]
         [Authorize(Policy = PaymentGatewayPolicy.MerchantOnly)]
         public async Task<IActionResult> RetrievePaymentAsync(Guid paymentId, CancellationToken cancellationToken = default)
         {
@@ -82,7 +82,7 @@ namespace CKO.PaymentGateway.Host.Api.Controllers
 
         [HttpPost]
         [Authorize(Policy = PaymentGatewayPolicy.MerchantOnly)]
-        public async Task<IActionResult> ProcessPaymentAsync(ProcessPaymentJsonRequest payload, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> ProcessPaymentAsync([FromBody] ProcessPaymentJsonRequest payload, CancellationToken cancellationToken = default)
         {
             // Working under the assumption that the token provided by the 'IdentityProvider' is always a GUID
             // and always exists because it passed the policy check.
@@ -105,9 +105,15 @@ namespace CKO.PaymentGateway.Host.Api.Controllers
             },
             processPaymentResponse =>
             {
-                var payment = processPaymentResponse.PaymentReference;
-                var result = _mapper.Map<PaymentJsonResponse>(payment);
-                return Ok(result);
+                var payment = processPaymentResponse.PaymentId;
+                return CreatedAtRoute(
+                        nameof(RetrievePaymentAsync),
+                        new
+                        {
+                            version = ApiVersionName.V1,
+                            paymentId = payment
+                        },
+                        default);
             });
 
             return actionResult;

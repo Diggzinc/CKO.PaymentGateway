@@ -25,7 +25,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CKO.PaymentGateway.Api.ViewModels\CKO.PaymentGateway.Api.ViewModels.csproj" />
-    <ProjectReference Include="..\CKO.PaymentGateway.Services.Abstractions\CKO.PaymentGateway.Services.Abstractions.csproj" />
     <ProjectReference Include="..\CKO.PaymentGateway.Services\CKO.PaymentGateway.Services.csproj" />
   </ItemGroup>
 

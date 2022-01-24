@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AcquiringBank.Api.Client\AcquiringBank.Api.Client.csproj" />
     <ProjectReference Include="..\CKO.PaymentGateway.Services.Abstractions\CKO.PaymentGateway.Services.Abstractions.csproj" />
   </ItemGroup>
 
