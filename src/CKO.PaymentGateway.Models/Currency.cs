@@ -13,11 +13,11 @@ namespace CKO.PaymentGateway.Models;
 /// </remarks>
 public readonly record struct Currency
 {
-    public readonly static Currency EUR = new("Euro", "EUR", 978, 2);
-    public readonly static Currency USD = new("United states dollar", "USD", 840, 2);
-    public readonly static Currency GBP = new("Pound sterling", "GBP", 826, 2);
-    public readonly static Currency CHF = new("Swiss franc", "CHF", 756, 2);
-    public readonly static Currency JPY = new("Japanese yen", "JPY", 392, 0);
+    public static readonly Currency EUR = new("Euro", "EUR", 978, 2);
+    public static readonly Currency USD = new("United states dollar", "USD", 840, 2);
+    public static readonly Currency GBP = new("Pound sterling", "GBP", 826, 2);
+    public static readonly Currency CHF = new("Swiss franc", "CHF", 756, 2);
+    public static readonly Currency JPY = new("Japanese yen", "JPY", 392, 0);
 
     /// <summary>
     /// All currencies available under the enumeration.
@@ -55,6 +55,7 @@ public readonly record struct Currency
     /// <summary>
     /// Initializes a new instance of the <see cref="Currency"/> record.
     /// </summary>
+    /// <param name="entity">The well-known name of the currency.</param>
     /// <param name="alphabeticCode">The alphabetic code of the currency.</param>
     /// <param name="numericCode">The numeric code of the currency.</param>
     /// <param name="minorUnit">The minor unit (precision) of the currency.</param>
@@ -66,6 +67,7 @@ public readonly record struct Currency
         MinorUnit = minorUnit;
     }
 
+    public static implicit operator Currency(string currency) => FromAlphabeticCode(currency);
     public static implicit operator string(Currency currency) => currency.AlphabeticCode;
     public static implicit operator ushort(Currency currency) => currency.NumericCode;
 

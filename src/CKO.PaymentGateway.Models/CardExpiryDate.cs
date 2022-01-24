@@ -16,6 +16,21 @@ namespace CKO.PaymentGateway.Models;
 public sealed record CardExpiryDate
 {
     /// <summary>
+    /// The minimum allowed month.
+    /// </summary>
+    public const byte MinimumAllowedMonth = 1;
+
+    /// <summary>
+    /// The maximum allowed month.
+    /// </summary>
+    public const byte MaximumAllowedMonth = 12;
+
+    /// <summary>
+    /// The maximum allowed year;
+    /// </summary>
+    public const byte MaximumAllowedYear = 99;
+
+    /// <summary>
     /// The <see cref="CardExpiryDate"/> Month component.
     /// </summary>
     public byte Month { get; init; }
@@ -46,18 +61,15 @@ public sealed record CardExpiryDate
     /// <exception cref="InvalidCardExpiryDateException">The exception in case the card expiry date is considered invalid.</exception>
     private static void Validate(byte month, byte year)
     {
-        const int minimumAllowedMonth = 1;
-        const int maximumAllowedMonth = 12;
-        const int maximumAllowedYear = 99;
 
         // byte primitive is unsigned therefore cannot go lower than 0 for the year, which is valid.
-        if (month < minimumAllowedMonth || month > maximumAllowedMonth ||
-            year > maximumAllowedYear)
+        if (month is < MinimumAllowedMonth or > MaximumAllowedMonth ||
+            year > MaximumAllowedYear)
         {
             throw new InvalidCardExpiryDateException(
                 month,
                 year,
-                $"Provided  expiry date '{month}/{year}' is not within the valid range [{minimumAllowedMonth}-{maximumAllowedMonth}]/[0-{maximumAllowedYear}].");
+                $"Provided  expiry date '{month}/{year}' is not within the valid range [{MinimumAllowedMonth}-{MaximumAllowedMonth}]/[0-{MaximumAllowedYear}].");
         }
     }
 }

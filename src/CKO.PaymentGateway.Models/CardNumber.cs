@@ -16,6 +16,22 @@ namespace CKO.PaymentGateway.Models;
 public sealed record CardNumber
 {
     /// <summary>
+    /// Minimum allowed digits for a card number.
+    /// </summary>
+    public const byte MinimumAllowedDigits = 14;
+
+    /// <summary>
+    /// Maximum allowed digits for a card number.
+    /// </summary>
+    public const byte MaximumAllowedDigits = 19;
+
+    /// <summary>
+    /// The number allowed pattern.
+    /// </summary>
+
+    public static readonly string AllowedPattern = @$"^([0-9]{{{MinimumAllowedDigits},{MaximumAllowedDigits}}})$";
+
+    /// <summary>
     /// The card number string value.
     /// </summary>
     public string Number { get; init; }
@@ -46,14 +62,11 @@ public sealed record CardNumber
 
         // checks if the provided number is constituted by digits only
         // within the an allowed range.
-        const int minimumAllowedDigits = 14;
-        const int maximumAllowedDigits = 19;
-        var pattern = @$"^([0-9]{{{minimumAllowedDigits},{maximumAllowedDigits}}})$";
-        if (!Regex.IsMatch(numberWithoutWhitespaces, pattern))
+        if (!Regex.IsMatch(numberWithoutWhitespaces, AllowedPattern))
         {
             throw new InvalidCardNumberException(
                 number,
-                $"Provided card number must contain only digits (stripped of whitespace) within the allowed range [{minimumAllowedDigits},{maximumAllowedDigits}].");
+                $"Provided card number must contain only digits (stripped of whitespace) within the allowed range [{MinimumAllowedDigits},{MaximumAllowedDigits}].");
         }
     }
 

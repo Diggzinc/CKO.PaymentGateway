@@ -13,6 +13,11 @@ namespace CKO.PaymentGateway.Models;
 public sealed record PaymentDescription
 {
     /// <summary>
+    /// Maximum allowed name length for the CardHolder.
+    /// </summary>
+    public const int MaximumAllowedLength = 255;
+
+    /// <summary>
     /// The description of the payment.
     /// </summary>
     public string Description { get; init; }
@@ -31,12 +36,11 @@ public sealed record PaymentDescription
     /// <summary>
     /// Validates the candidate payment description.
     /// </summary>
-    /// <param name="amount">The candidate payment description.</param>
+    /// <param name="description">The candidate payment description.</param>
     /// <exception cref="InvalidPaymentDescriptionException">The exception in case the payment description is considered invalid.</exception>
     private static void Validate(string description)
     {
-        const int maximumAllowedLength = 255;
-        if (string.IsNullOrWhiteSpace(description) || description.Length > maximumAllowedLength)
+        if (string.IsNullOrWhiteSpace(description) || description.Length > MaximumAllowedLength)
         {
             throw new InvalidPaymentDescriptionException(
                 description,

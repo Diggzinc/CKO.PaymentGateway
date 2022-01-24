@@ -18,7 +18,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CKO.PaymentGateway.Api.ViewModels", "src\CKO.PaymentGateway.Api.ViewModels\CKO.PaymentGateway.Api.ViewModels.csproj", "{CDF66457-56ED-4288-AA89-150FA3E1E3FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CKO.PaymentGateway.Api.ViewModels", "src\CKO.PaymentGateway.Api.ViewModels\CKO.PaymentGateway.Api.ViewModels.csproj", "{CDF66457-56ED-4288-AA89-150FA3E1E3FB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CKO.PaymentGateway.Services", "src\CKO.PaymentGateway.Services\CKO.PaymentGateway.Services.csproj", "{4BBF89B1-59B4-41D6-89D7-83957FC7E68B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,6 +48,10 @@ Global
 		{CDF66457-56ED-4288-AA89-150FA3E1E3FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CDF66457-56ED-4288-AA89-150FA3E1E3FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CDF66457-56ED-4288-AA89-150FA3E1E3FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BBF89B1-59B4-41D6-89D7-83957FC7E68B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BBF89B1-59B4-41D6-89D7-83957FC7E68B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BBF89B1-59B4-41D6-89D7-83957FC7E68B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BBF89B1-59B4-41D6-89D7-83957FC7E68B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

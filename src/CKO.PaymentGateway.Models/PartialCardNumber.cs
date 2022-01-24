@@ -13,6 +13,26 @@ namespace CKO.PaymentGateway.Models;
 public sealed record PartialCardNumber
 {
     /// <summary>
+    /// Minimum allowed digits for a partial card number length.
+    /// </summary>
+    public const byte MinimumAllowedDigitsForLength = CardNumber.MinimumAllowedDigits;
+
+    /// <summary>
+    /// Maximum allowed digits for a partial card number length.
+    /// </summary>
+    public const byte MaximumAllowedDigitsForLength = CardNumber.MaximumAllowedDigits;
+
+    /// <summary>
+    /// Exact amount of digits allowed for a partial number. 
+    /// </summary>
+    public const byte ExactAmountOfDigits = 4;
+
+    /// <summary>
+    /// The allowed pattern for the partial number.
+    /// </summary>
+    public static readonly string AllowedPattern = @$"^([0-9]{{{ExactAmountOfDigits}}})$";
+
+    /// <summary>
     /// The last 4 digits part of a card number string value.
     /// </summary>
     public string PartialNumber { get; init; }
@@ -42,7 +62,7 @@ public sealed record PartialCardNumber
     public PartialCardNumber(CardNumber cardNumber)
     {
         var number = cardNumber.Number.Replace(" ", string.Empty);
-        var partialNumber = number.Substring(number.Length - 4, 4);
+        var partialNumber = number.Substring(number.Length - ExactAmountOfDigits, ExactAmountOfDigits);
         var numberLength = (byte)number.Length;
 
         Validate(partialNumber, numberLength);
@@ -65,29 +85,25 @@ public sealed record PartialCardNumber
                                 numberLength,
                                 "Provided partial card number cannot be NULL.");
 
-        const int minimumAllowedDigitsForLength = 14;
-        const int maximumAllowedDigitsForLength = 19;
-        if (numberLength < minimumAllowedDigitsForLength || numberLength > maximumAllowedDigitsForLength)
+
+        if (numberLength is < MinimumAllowedDigitsForLength or > MaximumAllowedDigitsForLength)
         {
             throw new InvalidPartialCardNumberException(
                 partialNumber,
                 numberLength,
-                $"Provided partial card number length [{numberLength}] of the original card number must be within the allowed range [{minimumAllowedDigitsForLength},{maximumAllowedDigitsForLength}].");
+                $"Provided partial card number length [{numberLength}] of the original card number must be within the allowed range [{MinimumAllowedDigitsForLength},{MaximumAllowedDigitsForLength}].");
         }
 
         // removes potential whitespace from the partial number.
         var numberWithoutWhitespaces = Regex.Replace(partialNumber, @"\s", string.Empty);
 
         // checks if the provided number is constituted by digits only
-        // with exactly 4 digits.
-        const int exactAmountOfDigitsForPartialNumber = 4;
-        var pattern = @$"^([0-9]{{{exactAmountOfDigitsForPartialNumber}}})$";
-        if (!Regex.IsMatch(numberWithoutWhitespaces, pattern))
+        if (!Regex.IsMatch(numberWithoutWhitespaces, AllowedPattern))
         {
             throw new InvalidPartialCardNumberException(
                 partialNumber,
                 numberLength,
-                $"Provided part card number must contain only digits (stripped of whitespace) with exactly [{exactAmountOfDigitsForPartialNumber}] length.");
+                $"Provided part card number must contain only digits (stripped of whitespace) with exactly [{ExactAmountOfDigits}] length.");
         }
     }
 }

@@ -94,6 +94,19 @@ public class CurrencyTests
     }
 
     [Fact]
+    public void Should_Implicitly_Convert_String_To_Currency()
+    {
+        // Arrange
+        var expectedCurrency = Currency.EUR;
+
+        // Act
+        Currency currency = Currency.EUR.AlphabeticCode;
+
+        // Assert
+        Assert.Equal(expectedCurrency, currency);
+    }
+
+    [Fact]
     public void Should_Implicitly_Convert_Currency_To_String()
     {
         // Arrange

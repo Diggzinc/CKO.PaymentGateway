@@ -12,6 +12,11 @@ namespace CKO.PaymentGateway.Models;
 public sealed record PaymentCharge
 {
     /// <summary>
+    /// The minimum allowed amount.
+    /// </summary>
+    public const decimal MinimumAllowedAmountExclusive = 0m;
+
+    /// <summary>
     /// The payment charge amount component.
     /// </summary>
     public decimal Amount { get; init; }
@@ -42,7 +47,7 @@ public sealed record PaymentCharge
     /// <exception cref="InvalidPaymentChargeException">The exception in case the payment charge is considered invalid.</exception>
     private static void Validate(decimal amount, Currency currency)
     {
-        if (amount <= 0m || decimal.Round(amount, currency.MinorUnit) != amount)
+        if (amount <= MinimumAllowedAmountExclusive || decimal.Round(amount, currency.MinorUnit) != amount)
         {
             throw new InvalidPaymentChargeException(
                 amount,

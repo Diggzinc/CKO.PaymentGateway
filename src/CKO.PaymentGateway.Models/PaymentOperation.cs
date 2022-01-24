@@ -10,14 +10,14 @@ namespace CKO.PaymentGateway.Models;
 /// </remarks>
 public readonly record struct PaymentOperation
 {
-    public readonly static PaymentOperation Issued = new(0, "Issued");
-    public readonly static PaymentOperation Verifying = new(1, "Verifying");
-    public readonly static PaymentOperation Verified = new(2, "Verified");
-    public readonly static PaymentOperation Authorizing = new(3, "Authorizing");
-    public readonly static PaymentOperation Authorized = new(4, "Authorized");
-    public readonly static PaymentOperation Processing = new(5, "Processing");
-    public readonly static PaymentOperation Processed = new(6, "Processed");
-    public readonly static PaymentOperation Failed = new(7, "Failed");
+    public static readonly PaymentOperation Issued = new(0, "Issued");
+    public static readonly PaymentOperation Verifying = new(1, "Verifying");
+    public static readonly PaymentOperation Verified = new(2, "Verified");
+    public static readonly PaymentOperation Authorizing = new(3, "Authorizing");
+    public static readonly PaymentOperation Authorized = new(4, "Authorized");
+    public static readonly PaymentOperation Processing = new(5, "Processing");
+    public static readonly PaymentOperation Processed = new(6, "Processed");
+    public static readonly PaymentOperation Failed = new(7, "Failed");
 
     /// <summary>
     /// All payment operations available under the enumeration.

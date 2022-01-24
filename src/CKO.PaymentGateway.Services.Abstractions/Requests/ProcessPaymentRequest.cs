@@ -10,6 +10,7 @@ namespace CKO.PaymentGateway.Services.Abstractions.Requests;
 /// Processes a payment.
 /// </summary>
 public record ProcessPaymentRequest(
+    Guid MerchantId,
     Card Card,
     PaymentCharge Charge,
     PaymentDescription Description)

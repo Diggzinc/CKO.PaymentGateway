@@ -13,6 +13,22 @@ namespace CKO.PaymentGateway.Models;
 public sealed record CardSecurityCode
 {
     /// <summary>
+    /// The minimum allowed digits.
+    /// </summary>
+    public const byte MinimumAllowedDigits = 3;
+
+    /// <summary>
+    /// The maximum allowed digits.
+    /// </summary>
+    public const byte MaximumAllowedDigits = 4;
+
+    /// <summary>
+    /// The security code allowed pattern.
+    /// </summary>
+
+    public static readonly string AllowedPattern = @$"^([0-9]{{{MinimumAllowedDigits},{MaximumAllowedDigits}}})$";
+
+    /// <summary>
     /// The card security code string value.
     /// </summary>
     public string SecurityCode { get; init; }
@@ -31,7 +47,7 @@ public sealed record CardSecurityCode
     /// <summary>
     /// Validates the candidate card security code.
     /// </summary>
-    /// <param name="number">The candidate card security code.</param>
+    /// <param name="securityCode">The candidate card security code.</param>
     /// <exception cref="InvalidCardSecurityCodeException">The exception in case the card security code is considered invalid.</exception>
     // NOTE: Regexes are used for the sake of readability simplicity.
     private static void Validate(string securityCode)
@@ -40,14 +56,11 @@ public sealed record CardSecurityCode
 
         // checks if the provided number is constituted by digits only
         // within the an allowed range.
-        const int minimumAllowedDigits = 3;
-        const int maximumAllowedDigits = 4;
-        var pattern = @$"^([0-9]{{{minimumAllowedDigits},{maximumAllowedDigits}}})$";
-        if (!Regex.IsMatch(securityCode, pattern))
+        if (!Regex.IsMatch(securityCode, AllowedPattern))
         {
             throw new InvalidCardSecurityCodeException(
                 securityCode,
-                $"Provided card number must contain only digits within the allowed range [{minimumAllowedDigits},{maximumAllowedDigits}].");
+                $"Provided card number must contain only digits within the allowed range [{MinimumAllowedDigits},{MaximumAllowedDigits}].");
         }
     }
 

@@ -15,6 +15,11 @@ namespace CKO.PaymentGateway.Models;
 public sealed record CardHolder
 {
     /// <summary>
+    /// Maximum allowed name length for the CardHolder.
+    /// </summary>
+    public const int MaximumAllowedNameLength = 255;
+
+    /// <summary>
     /// String representation of the card holders name.
     /// </summary>
     public string Name { get; init; }
@@ -37,10 +42,14 @@ public sealed record CardHolder
     /// <exception cref="InvalidCardHolderException">The exception in case the card holders name is considered invalid.</exception>
     private static void Validate(string name)
     {
-        const int maximumAllowedLength = 255;
-        if (string.IsNullOrWhiteSpace(name) || name.Length > maximumAllowedLength)
+        if (string.IsNullOrWhiteSpace(name))
         {
             throw new InvalidCardHolderException(name, "Provided card holder's name cannot be NULL or whitespace.");
+        }
+
+        if (name.Length > MaximumAllowedNameLength)
+        {
+            throw new InvalidCardHolderException(name, $"Provided card holder's name cannot be exceed [{MaximumAllowedNameLength}] characters.");
         }
     }
 

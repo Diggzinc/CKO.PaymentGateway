@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Constants\" />
+    <ProjectReference Include="..\CKO.PaymentGateway.Services.Abstractions\CKO.PaymentGateway.Services.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

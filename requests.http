@@ -1,0 +1,77 @@
+@api-endpoint= http://localhost:5090
+@api-version=v1
+
+# {
+#   "name": "John Doe",
+#   "merchantId": "8005d917-3c6b-4b48-adc8-0ebe0e6dbc94"
+# }
+@token-a=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSm9obiBEb2UiLCJtZXJjaGFudElkIjoiODAwNWQ5MTctM2M2Yi00YjQ4LWFkYzgtMGViZTBlNmRiYzk0In0.0V4hnefnc9sDWcgcdlhqawRfsz-fn4I5SqE3jcvuJyo
+
+# {
+#   "name": "Adidas",
+#   "merchantId": "ed962527-eb35-44a9-9c09-b75af6c84ac2"
+# }
+@token-b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiQWRpZGFzIiwibWVyY2hhbnRJZCI6ImVkOTYyNTI3LWViMzUtNDRhOS05YzA5LWI3NWFmNmM4NGFjMiJ9.dSGWjei4fg6jbhQ-Hysuok6F7967thIifSetVoy1NlY
+
+# Alternate between token-a or token-b to switch merchant context for the requests.
+@token={{token-a}}
+
+###
+# EXAMPLE 1
+# Process a payment
+# valid request
+POST {{api-endpoint}}/api/{{api-version}}/payments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "card": {
+    "number": "1111 1111 11111111",
+    "securityCode": "111",
+    "expiryDate": "01/20",
+    "holder": "John Doe"
+  },
+  "charge": {
+    "currency": "EUR",
+    "amount": 0.01
+  },
+  "description": "AMZN Purchase"
+}
+
+###
+# EXAMPLE 2
+# Process a payment
+# invalid properties
+POST {{api-endpoint}}/api/{{api-version}}/payments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "card": {
+    "number": "1111 AA 1111 1111 11111111",
+    "securityCode": "A",
+    "expiryDate": "21/20",
+    "holder": "  "
+  },
+  "charge": {
+    "currency": "XXX",
+    "amount": 0.00
+  },
+  "description": "  "
+}
+
+###
+# EXAMPLE 3
+# Process a payment
+# invalid properties
+POST {{api-endpoint}}/api/{{api-version}}/payments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "card": {},
+  "charge": {
+    "currency": null
+  },
+  "description": null
+}
