@@ -23,7 +23,7 @@ public class CardJsonRequestValidator : AbstractValidator<CardJsonRequest>
             .Matches(CardSecurityCode.AllowedPattern);
 
         RuleFor(request => request.ExpiryDate)
-            .Must(IsValidSimplifiedExpiryDate).WithMessage("'expiryDate' provided does conform with the allowed format 'mm/yy'.");
+            .Must(IsValidSimplifiedExpiryDate).WithMessage("'expiryDate' provided does conform with the allowed format 'mm/yy' or has expired.");
     }
 
     private static string AllowedDynamicLengthMessage(CardJsonRequest request, string? number)
@@ -60,7 +60,10 @@ public class CardJsonRequestValidator : AbstractValidator<CardJsonRequest>
         int month = byte.Parse(match.Groups[MonthGroupName].Value);
         int year = byte.Parse(match.Groups[YearGroupName].Value);
 
+        var currentMonth = DateTime.Now.Month;
+        var currentYear = DateTime.Now.Year % 100;
         return month is >= CardExpiryDate.MinimumAllowedMonth and <= CardExpiryDate.MaximumAllowedMonth &&
-               year <= CardExpiryDate.MaximumAllowedYear;
+               year <= CardExpiryDate.MaximumAllowedYear &&
+               (year > currentYear || (month >= currentMonth && year == currentYear));
     }
 }

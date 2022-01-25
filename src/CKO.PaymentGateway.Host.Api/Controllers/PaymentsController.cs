@@ -99,6 +99,16 @@ namespace CKO.PaymentGateway.Host.Api.Controllers
             {
                 switch (error)
                 {
+                    case UnableToProcessPaymentError(var paymentId, var reason):
+                        var problemDetails = ProblemDetailsFactory
+                            .CreateProblemDetails(
+                                HttpContext,
+                                StatusCodes.Status400BadRequest,
+                                type: "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
+                                title: "Unable to process payment.",
+                                detail: $"Payment {paymentId} failed to process because {reason}.");
+                        return BadRequest(problemDetails);
+
                     default:
                         throw new ArgumentOutOfRangeException(nameof(error));
                 }

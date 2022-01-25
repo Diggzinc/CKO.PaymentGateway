@@ -1,4 +1,4 @@
-@api-endpoint= http://localhost:5090
+@api-endpoint= http://localhost:5000
 @api-version=v1
 
 # {
@@ -31,9 +31,9 @@ Content-Type: application/json
 
 {
   "card": {
-    "number": "1111 1111 11111111",
+    "number": "1111 1111 1111 1235",
     "securityCode": "111",
-    "expiryDate": "01/20",
+    "expiryDate": "01/27",
     "holder": "John Doe"
   },
   "charge": {
@@ -101,3 +101,25 @@ Authorization: Bearer {{token}}
 # this payment does not exist for any merchant.
 GET {{api-endpoint}}/api/{{api-version}}/payments/4bdb49ee-cd4a-45d7-b104-64b9f32ba28b
 Authorization: Bearer {{token}}
+
+###
+# EXAMPLE 7
+# Process a payment
+# invalid request because card has expired.
+POST {{api-endpoint}}/api/{{api-version}}/payments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "card": {
+    "number": "1111 1111 1111 1111",
+    "securityCode": "111",
+    "expiryDate": "12/21",
+    "holder": "John Doe"
+  },
+  "charge": {
+    "currency": "EUR",
+    "amount": 0.01
+  },
+  "description": "AMZN Purchase"
+}

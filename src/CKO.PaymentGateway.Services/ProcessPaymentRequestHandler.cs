@@ -45,6 +45,9 @@ public class ProcessPaymentRequestHandler
             // There is a lot of back and forth interaction with the acquiring bank.
             // For demonstration purposes we do it in just one go, and inject some errors in between
             // with the mock API.
+            // We pass along the transaction id so that the state machine does not run the tasks
+            // out of order, again for demonstration purposes.
+
             transactionId = await IssuePaymentAsync(paymentId, merchantId, card, charge, description, cancellationToken);
 
             transactionId = await VerifyPaymentAsync(paymentId, transactionId, cancellationToken);
@@ -71,7 +74,7 @@ public class ProcessPaymentRequestHandler
 
             await _context.PaymentOperationRecords.AddAsync(afterEntity, cancellationToken);
 
-            return new UnableToProcessPaymentError(paymentId);
+            return new UnableToProcessPaymentError(paymentId, exception.Reason);
         }
         finally
         {

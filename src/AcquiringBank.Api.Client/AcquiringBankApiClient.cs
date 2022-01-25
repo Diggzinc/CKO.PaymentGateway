@@ -59,6 +59,7 @@ public class AcquiringBankApiClient : IAcquiringBankClient
         }
         catch (FlurlHttpException exception)
         {
+            var reason = await exception.GetResponseStringAsync() ?? UnknownReason;
             throw new AcquiringBankClientException(UnknownReason);
         }
     }

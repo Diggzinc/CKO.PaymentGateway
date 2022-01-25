@@ -5,6 +5,9 @@ using CKO.PaymentGateway.Api.ViewModels;
 using CKO.PaymentGateway.Host.Api.Configurations;
 using CKO.PaymentGateway.Host.Api.Constants;
 using CKO.PaymentGateway.Services;
+using CKO.PaymentGateway.Services.Abstractions.Errors;
+using CKO.PaymentGateway.Services.Abstractions.Requests;
+using CKO.PaymentGateway.Services.Abstractions.Responses;
 using CKO.PaymentGateway.Services.Entities;
 using FluentValidation.AspNetCore;
 using MediatR;
@@ -12,6 +15,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using OneOf;
 using Serilog;
 using Serilog.Events;
 using Serilog.Exceptions;
@@ -19,13 +23,12 @@ using Serilog.Exceptions;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddEnvironmentVariables();
-var config = new PaymentGatewayApiConfiguration
-{
-    IssuerKey = builder.Configuration.GetValue<string>(EnvironmentVariable.IssuerKey),
-    AcquiringBankApiEndpoint = builder.Configuration.GetValue<string>(EnvironmentVariable.AcquiringBankApiEndpoint),
-    AcquiringBankApiKey = builder.Configuration.GetValue<string>(EnvironmentVariable.AcquiringBankApiKey),
-    ConnectionString = builder.Configuration.GetValue<string>(EnvironmentVariable.ConnectionString),
-};
+
+var configuration = new PaymentGatewayApiConfiguration(
+    builder.Configuration.GetValue<string>(EnvironmentVariable.IssuerKey),
+    builder.Configuration.GetValue<string>(EnvironmentVariable.AcquiringBankApiEndpoint),
+    builder.Configuration.GetValue<string>(EnvironmentVariable.AcquiringBankApiKey),
+    builder.Configuration.GetValue<string>(EnvironmentVariable.ConnectionString));
 
 // Add services to the container.
 builder.Services.AddHttpContextAccessor();
@@ -50,7 +53,7 @@ builder.Services
             ValidateIssuerSigningKey = true,
             IssuerSigningKey =
                 new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(config.IssuerKey)),
+                    Encoding.UTF8.GetBytes(configuration.IssuerKey)),
             ValidateIssuer = false,
             ValidateAudience = false,
             RequireExpirationTime = false,
@@ -71,15 +74,15 @@ builder.Services.AddApiVersioning(options =>
 
 builder.Services.AddDbContext<PaymentGatewayContext>(options =>
     options
-        .UseNpgsql(config.ConnectionString)
+        .UseNpgsql(configuration.ConnectionString)
         .UseSnakeCaseNamingConvention());
 
 // Add AcquiringBank Client
 builder.Services
     .AddTransient<IAcquiringBankClient>(provider =>
     {
-        var endpoint = config.AcquiringBankApiEndpoint;
-        var apiKey = config.AcquiringBankApiKey;
+        var endpoint = configuration.AcquiringBankApiEndpoint;
+        var apiKey = configuration.AcquiringBankApiKey;
         return new AcquiringBankApiClient(endpoint, apiKey);
     });
 
@@ -125,6 +128,11 @@ builder.Services
 
 builder.Services
     .AddMediatR(typeof(PaymentGatewayServicesAnchor));
+builder.Services
+    .AddTransient<
+        IPipelineBehavior<ProcessPaymentRequest, OneOf<PaymentServiceError, ProcessPaymentResponse>>,
+        ProcessPaymentRequestLoggingBehavior
+    >();
 
 builder.Services
     .AddAutoMapper(

@@ -10,7 +10,7 @@
         "ACQUIRING_BANK_API_KEY": "some-api-key",
         "CONNECTION_STRING": "Host=127.0.0.1,5432;Database=PaymentGatewayDatabase;Username=postgres;Password=postgres"
       },
-      "applicationUrl": "http://localhost:5090",
+      "applicationUrl": "http://localhost:5000",
       "dotnetRunMessages": true
     }
   }
