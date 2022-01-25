@@ -45,6 +45,31 @@ public class PaymentOperationTests
         Assert.Equal(expectedPaymentOperation, paymentOperation);
     }
 
+    public static IEnumerable<object[]> SupportedCodesTestData =>
+        new List<object[]>
+        {
+            new object[] { "Issued", PaymentOperation.Issued },
+            new object[] { "Verifying", PaymentOperation.Verifying },
+            new object[] { "Verified", PaymentOperation.Verified },
+            new object[] { "Authorizing", PaymentOperation.Authorizing },
+            new object[] { "Authorized", PaymentOperation.Authorized },
+            new object[] { "Processing", PaymentOperation.Processing },
+            new object[] { "Processed", PaymentOperation.Processed },
+            new object[] { "Failed", PaymentOperation.Failed },
+        };
+
+    [Theory]
+    [MemberData(nameof(SupportedCodesTestData))]
+    public void Should_Get_PaymentOperation_From_Supported_Code(string code, PaymentOperation expectedPaymentOperation)
+    {
+        // Arrange
+        // Act
+        var paymentOperation = PaymentOperation.FromCode(code);
+
+        // Assert
+        Assert.Equal(expectedPaymentOperation, paymentOperation);
+    }
+
     [Fact]
     public void Should_Have_Default_PaymentOperation_As_Issued()
     {

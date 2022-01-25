@@ -5,6 +5,11 @@
 #   "name": "John Doe",
 #   "merchantId": "8005d917-3c6b-4b48-adc8-0ebe0e6dbc94"
 # }
+#
+# This merchant already has two entries for payments under seeded by the migrations for demonstration purposes.
+#
+# payment-id: 606077e8-8f06-4f79-a6a1-12e48f3e33a1 (successful payment)
+# payment-id: 967190ba-3877-4a4a-8163-11614f55080b (failed payment)
 @token-a=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSm9obiBEb2UiLCJtZXJjaGFudElkIjoiODAwNWQ5MTctM2M2Yi00YjQ4LWFkYzgtMGViZTBlNmRiYzk0In0.0V4hnefnc9sDWcgcdlhqawRfsz-fn4I5SqE3jcvuJyo
 
 # {
@@ -75,3 +80,24 @@ Content-Type: application/json
   },
   "description": null
 }
+
+###
+# EXAMPLE 4
+# get a payment by id
+# exists for token-a
+GET {{api-endpoint}}/api/{{api-version}}/payments/606077e8-8f06-4f79-a6a1-12e48f3e33a1
+Authorization: Bearer {{token}}
+
+###
+# EXAMPLE 5
+# get a payment by id
+# exists for token-a but has a record indicating failure after 'Authorizing'
+GET {{api-endpoint}}/api/{{api-version}}/payments/967190ba-3877-4a4a-8163-11614f55080b
+Authorization: Bearer {{token}}
+
+###
+# EXAMPLE 6
+# get a payment by id
+# this payment does not exist for any merchant.
+GET {{api-endpoint}}/api/{{api-version}}/payments/4bdb49ee-cd4a-45d7-b104-64b9f32ba28b
+Authorization: Bearer {{token}}

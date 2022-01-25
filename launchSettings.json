@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "composeLaunchAction": "None",
+      "composeLaunchServiceName": "cko.paymentgateway.host.api",
+      "composeProfile": {
+        "includes": [
+          "visual_studio_dev",
+          "infrastructure"
+        ]
+      },
+      "commandVersion": "1.0"
+    }
+  }
+}

@@ -10,6 +10,7 @@ namespace AcquiringBank.Api.Client;
 public class AcquiringBankApiClient : IAcquiringBankClient
 {
     private const string ApiKeyHeader = "X-Api-Key";
+    private const string UnknownReason = "UNKNOWN";
     private readonly string _endpoint;
     private readonly string _apiKey;
 
@@ -42,7 +43,8 @@ public class AcquiringBankApiClient : IAcquiringBankClient
         }
         catch (FlurlHttpException exception)
         {
-            throw new AcquiringBankClientException();
+            var reason = await exception.GetResponseStringAsync() ?? UnknownReason;
+            throw new AcquiringBankClientException(reason);
         }
     }
 
@@ -57,7 +59,7 @@ public class AcquiringBankApiClient : IAcquiringBankClient
         }
         catch (FlurlHttpException exception)
         {
-            throw new AcquiringBankClientException();
+            throw new AcquiringBankClientException(UnknownReason);
         }
     }
 
@@ -72,7 +74,8 @@ public class AcquiringBankApiClient : IAcquiringBankClient
         }
         catch (FlurlHttpException exception)
         {
-            throw new AcquiringBankClientException();
+            var reason = await exception.GetResponseStringAsync() ?? UnknownReason;
+            throw new AcquiringBankClientException(reason);
         }
     }
 
@@ -87,7 +90,8 @@ public class AcquiringBankApiClient : IAcquiringBankClient
         }
         catch (FlurlHttpException exception)
         {
-            throw new AcquiringBankClientException();
+            var reason = await exception.GetResponseStringAsync() ?? UnknownReason;
+            throw new AcquiringBankClientException(reason);
         }
     }
 }

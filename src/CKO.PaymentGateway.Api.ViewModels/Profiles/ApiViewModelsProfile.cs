@@ -22,7 +22,8 @@ public class ApiViewModelsProfile : Profile
                 var charge = new PaymentCharge(request.Charge.Amount, request.Charge.Currency);
                 PaymentDescription description = request.Description;
                 return (card, charge, description);
-            });
+            })
+            .ForAllMembers(opt => opt.Ignore());
 
         CreateMap<Payment, PaymentJsonResponse>()
             .ForMember(dst => dst.Card, opt => opt.MapFrom((src, _) => ToMaskedCardJsonResponse(src)));

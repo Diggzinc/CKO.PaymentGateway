@@ -1,10 +1,57 @@
+version: '3.4'
+
 services:
+
   mock_acquiring_bank_api:
     image: mockoon/cli:1.5.0
-    container_name: mock_acquiring_bank_api
-    restart: always
     ports:
-      - "127.0.0.1:3000:3000"
+      - "127.0.0.1:${MOCK_ACQUIRING_BANK_API_PORT}:3000"
     volumes:
       - ./acquiring-bank-mock-api.json:/data:ro
     command: -d data -i 0 -p 3000
+    profiles: [visual_studio_dev, infrastructure]
+
+  database:
+    image: postgres:14.1
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT}:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - database_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-q", "-U", "postgres"]
+      interval: 5s
+      timeout: 1s
+      retries: 2
+    profiles: ["visual_studio_dev", "infrastructure"]
+
+  migrations:
+    image: flyway/flyway:8.4.2
+    environment:
+      - FLYWAY_EDITION=community
+    volumes:
+      - ./migrations:/flyway/sql
+    depends_on:
+      database:
+        condition: service_healthy
+    command: -url=jdbc:postgresql://database:${POSTGRES_PORT}/${POSTGRES_DB} -schemas=public -user=${POSTGRES_USER} -password=${POSTGRES_PASSWORD} migrate
+    profiles: ["visual_studio_dev", "infrastructure"]
+
+  cko.paymentgateway.host.api:
+    image: ${DOCKER_REGISTRY-}ckopaymentgatewayhostapi
+    build:
+      context: .
+      dockerfile: src/CKO.PaymentGateway.Host.Api/Dockerfile
+    environment:
+      - ISSUER_KEY=your-256-bit-secret
+      - ACQUIRING_BANK_API_ENDPOINT=http://mock_acquiring_bank_api:${MOCK_ACQUIRING_BANK_API_PORT}
+      - ACQUIRING_BANK_API_KEY=some-api-key
+      - CONNECTION_STRING=Host=database,${POSTGRES_PORT};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+    profiles: ["visual_studio_dev"]
+    depends_on: [migrations]
+
+volumes:
+  database_data:

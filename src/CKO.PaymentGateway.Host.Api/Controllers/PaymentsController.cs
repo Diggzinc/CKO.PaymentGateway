@@ -64,7 +64,7 @@ namespace CKO.PaymentGateway.Host.Api.Controllers
                                 StatusCodes.Status404NotFound,
                                 type: "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
                                 title: "Payment not found.");
-                        return BadRequest(problemDetails);
+                        return NotFound(problemDetails);
 
                     default:
                         throw new ArgumentOutOfRangeException(nameof(error));

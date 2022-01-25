@@ -2,18 +2,30 @@ using System.Text;
 using System.Text.Json;
 using AcquiringBank.Api.Client;
 using CKO.PaymentGateway.Api.ViewModels;
+using CKO.PaymentGateway.Host.Api.Configurations;
 using CKO.PaymentGateway.Host.Api.Constants;
 using CKO.PaymentGateway.Services;
+using CKO.PaymentGateway.Services.Entities;
 using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Events;
 using Serilog.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.AddEnvironmentVariables();
+var config = new PaymentGatewayApiConfiguration
+{
+    IssuerKey = builder.Configuration.GetValue<string>(EnvironmentVariable.IssuerKey),
+    AcquiringBankApiEndpoint = builder.Configuration.GetValue<string>(EnvironmentVariable.AcquiringBankApiEndpoint),
+    AcquiringBankApiKey = builder.Configuration.GetValue<string>(EnvironmentVariable.AcquiringBankApiKey),
+    ConnectionString = builder.Configuration.GetValue<string>(EnvironmentVariable.ConnectionString),
+};
 
 // Add services to the container.
 builder.Services.AddHttpContextAccessor();
@@ -31,7 +43,6 @@ builder.Services
     })
     .AddJwtBearer(options =>
     {
-        // The symmetric key used is the default one for https://jwt.io (ease of use)
         options.RequireHttpsMetadata = false;
         options.SaveToken = true;
         options.TokenValidationParameters = new TokenValidationParameters
@@ -39,7 +50,7 @@ builder.Services
             ValidateIssuerSigningKey = true,
             IssuerSigningKey =
                 new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes("your-256-bit-secret")),
+                    Encoding.UTF8.GetBytes(config.IssuerKey)),
             ValidateIssuer = false,
             ValidateAudience = false,
             RequireExpirationTime = false,
@@ -56,12 +67,19 @@ builder.Services.AddApiVersioning(options =>
     options.AssumeDefaultVersionWhenUnspecified = true;
 });
 
+// Add Database
+
+builder.Services.AddDbContext<PaymentGatewayContext>(options =>
+    options
+        .UseNpgsql(config.ConnectionString)
+        .UseSnakeCaseNamingConvention());
+
 // Add AcquiringBank Client
 builder.Services
     .AddTransient<IAcquiringBankClient>(provider =>
     {
-        var endpoint = "http://localhost:3001";
-        var apiKey = "some-api-key";
+        var endpoint = config.AcquiringBankApiEndpoint;
+        var apiKey = config.AcquiringBankApiKey;
         return new AcquiringBankApiClient(endpoint, apiKey);
     });
 
@@ -110,7 +128,8 @@ builder.Services
 
 builder.Services
     .AddAutoMapper(
-        typeof(ApiViewModelsAnchor));
+        typeof(ApiViewModelsAnchor),
+        typeof(PaymentGatewayServicesAnchor));
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services

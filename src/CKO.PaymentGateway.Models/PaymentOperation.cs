@@ -82,5 +82,24 @@ public readonly record struct PaymentOperation
                         $"Unsupported id provided [{id}]. Supported payment operations: {supportedPaymentOperations}");
         }
     }
-}
 
+    /// <summary>
+    /// Gets the payment operation for the provided code.
+    /// </summary>
+    /// <param name="code">The operation code.</param>
+    /// <returns>The corresponding currency.</returns>
+    /// <exception cref="UnsupportedPaymentOperationException">Exception thrown if the supplied code is unsupported.</exception>
+    public static PaymentOperation FromCode(string code)
+    {
+        try
+        {
+            return All.Single(operation => operation.Code.Equals(code));
+        }
+        catch (InvalidOperationException)
+        {
+            var supportedPaymentOperations = string.Join(",", All);
+            throw new UnsupportedPaymentOperationException(
+                $"Unsupported code provided [{code}]. Supported payment operations: {supportedPaymentOperations}");
+        }
+    }
+}

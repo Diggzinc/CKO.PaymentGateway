@@ -3,13 +3,15 @@
   "profiles": {
     "CKO.PaymentGateway.Host.Api": {
       "commandName": "Project",
-      "dotnetRunMessages": true,
-      //"launchBrowser": true,
-      //"launchUrl": "swagger",
-      "applicationUrl": "http://localhost:5090",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ISSUER_KEY": "your-256-bit-secret",
+        "ACQUIRING_BANK_API_ENDPOINT": "http://localhost:3000",
+        "ACQUIRING_BANK_API_KEY": "some-api-key",
+        "CONNECTION_STRING": "Host=127.0.0.1,5432;Database=PaymentGatewayDatabase;Username=postgres;Password=postgres"
+      },
+      "applicationUrl": "http://localhost:5090",
+      "dotnetRunMessages": true
     }
   }
 }
