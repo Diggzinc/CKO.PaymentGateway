@@ -2,16 +2,16 @@
   "uuid": "8e8c446d-dcd6-4d27-803f-cc704c943d93",
   "lastMigration": 19,
   "name": "AcquiringBank API",
-  "endpointPrefix": "api/v1",
+  "endpointPrefix": "",
   "latency": 0,
-  "port": 3001,
+  "port": 3000,
   "hostname": "127.0.0.1",
   "routes": [
     {
       "uuid": "ab25e212-6791-4b5a-a4e4-7923f795e7a2",
       "documentation": "",
       "method": "post",
-      "endpoint": "merchants/:merchantId/issue",
+      "endpoint": "api/v1/merchants/:merchantId/issue",
       "responses": [
         {
           "uuid": "2eb29ce9-49db-497c-9007-1628d3b140f2",
@@ -36,7 +36,7 @@
       "uuid": "68b083fe-38f1-4d88-9c86-70e5c36e4bb3",
       "documentation": "",
       "method": "put",
-      "endpoint": "transactions/:transactionId/verify",
+      "endpoint": "api/v1/transactions/:transactionId/verify",
       "responses": [
         {
           "uuid": "5afb8f61-35ec-4c14-90d1-8eee953ab1a9",
@@ -61,7 +61,7 @@
       "uuid": "a4bbd455-beb3-458b-9698-0d939bdc3737",
       "documentation": "",
       "method": "put",
-      "endpoint": "transactions/:transactionId/authorize",
+      "endpoint": "api/v1/transactions/:transactionId/authorize",
       "responses": [
         {
           "uuid": "3da04680-f963-43ce-ab5b-db91e45f2caa",
@@ -86,11 +86,36 @@
       "uuid": "36c34d57-05ae-4b9a-beba-c6a063a29b26",
       "documentation": "",
       "method": "put",
-      "endpoint": "transactions/:transactionId/process",
+      "endpoint": "api/v1/transactions/:transactionId/process",
       "responses": [
         {
           "uuid": "e2339231-6f2f-4331-a9f4-3d48c4ec0ddf",
           "body": "",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "filePath": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false
+        }
+      ],
+      "enabled": true,
+      "randomResponse": false,
+      "sequentialResponse": false
+    },
+    {
+      "uuid": "8e7afc45-209f-42a1-9959-bb62465ff815",
+      "documentation": "Adds health",
+      "method": "get",
+      "endpoint": "health",
+      "responses": [
+        {
+          "uuid": "36369932-c04c-44f4-b79b-0dad7f7feca7",
+          "body": "{}",
           "latency": 0,
           "statusCode": 200,
           "label": "",

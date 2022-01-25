@@ -4,6 +4,7 @@ using AcquiringBank.Api.Client;
 using CKO.PaymentGateway.Api.ViewModels;
 using CKO.PaymentGateway.Host.Api.Configurations;
 using CKO.PaymentGateway.Host.Api.Constants;
+using CKO.PaymentGateway.Host.Api.HealthChecks;
 using CKO.PaymentGateway.Services;
 using CKO.PaymentGateway.Services.Abstractions.Errors;
 using CKO.PaymentGateway.Services.Abstractions.Requests;
@@ -12,10 +13,13 @@ using CKO.PaymentGateway.Services.Entities;
 using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using OneOf;
+using RockLib.HealthChecks.AspNetCore.ResponseWriter;
 using Serilog;
 using Serilog.Events;
 using Serilog.Exceptions;
@@ -29,6 +33,8 @@ var configuration = new PaymentGatewayApiConfiguration(
     builder.Configuration.GetValue<string>(EnvironmentVariable.AcquiringBankApiEndpoint),
     builder.Configuration.GetValue<string>(EnvironmentVariable.AcquiringBankApiKey),
     builder.Configuration.GetValue<string>(EnvironmentVariable.ConnectionString));
+
+builder.Services.AddSingleton<PaymentGatewayApiConfiguration>(configuration);
 
 // Add services to the container.
 builder.Services.AddHttpContextAccessor();
@@ -71,7 +77,6 @@ builder.Services.AddApiVersioning(options =>
 });
 
 // Add Database
-
 builder.Services.AddDbContext<PaymentGatewayContext>(options =>
     options
         .UseNpgsql(configuration.ConnectionString)
@@ -89,6 +94,12 @@ builder.Services
 builder.Services
     .AddControllers()
     .AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
+
+// Add health checks
+builder.Services
+    .AddHealthChecks()
+    .AddCheck<PostgresHealthCheck>("data-storage", HealthStatus.Unhealthy, timeout: TimeSpan.FromSeconds(2))
+    .AddCheck<AcquiringBankHealthCheck>("acquiring-bank-services", HealthStatus.Degraded, timeout: TimeSpan.FromSeconds(5));
 
 // Add logging
 Log.Logger = new LoggerConfiguration()
@@ -157,6 +168,11 @@ app.UseSerilogRequestLogging();
 app.UseAuthentication();
 app.UseRouting();
 app.UseAuthorization();
+app.UseHealthChecks("/health", new HealthCheckOptions
+{
+    Predicate = _ => true,
+    ResponseWriter = RockLibHealthChecks.ResponseWriter
+});
 app.UseEndpoints(endpoints => endpoints.MapControllers());
 
 app.Run();

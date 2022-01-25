@@ -123,3 +123,9 @@ Content-Type: application/json
   },
   "description": "AMZN Purchase"
 }
+
+###
+# EXAMPLE 8
+# Get health of the service
+# Try to change to stop the database or stop the Acquiring Bank API mock.
+GET {{api-endpoint}}/health
