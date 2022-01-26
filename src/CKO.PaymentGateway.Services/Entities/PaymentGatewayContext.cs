@@ -8,6 +8,10 @@ public class PaymentGatewayContext : DbContext
     public virtual DbSet<PaymentEntity> Payments { get; set; }
     public virtual DbSet<PaymentOperationRecordEntity> PaymentOperationRecords { get; set; }
 
+    public PaymentGatewayContext()
+    {
+    }
+
     public PaymentGatewayContext(DbContextOptions<PaymentGatewayContext> options) : base(options)
     {
     }

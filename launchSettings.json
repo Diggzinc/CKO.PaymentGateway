@@ -2,7 +2,7 @@
   "profiles": {
     "Docker Compose": {
       "commandName": "DockerCompose",
-      "composeLaunchAction": "None",
+      "composeLaunchAction": "LaunchBrowser",
       "composeLaunchServiceName": "cko.paymentgateway.host.api",
       "composeProfile": {
         "includes": [
@@ -10,6 +10,7 @@
           "infrastructure"
         ]
       },
+      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/health",
       "commandVersion": "1.0"
     }
   }

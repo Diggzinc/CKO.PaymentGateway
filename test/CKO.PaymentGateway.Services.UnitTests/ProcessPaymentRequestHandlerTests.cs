@@ -2,11 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AcquiringBank.Api.Client;
+using AcquiringBank.Api.Client.Exceptions;
 using AutoMapper;
 using CKO.PaymentGateway.Models;
+using CKO.PaymentGateway.Services.Abstractions.Errors;
 using CKO.PaymentGateway.Services.Abstractions.Requests;
 using CKO.PaymentGateway.Services.Entities;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using Xunit;
 
 namespace CKO.PaymentGateway.Services.UnitTests;
@@ -65,6 +68,9 @@ public class ProcessPaymentRequestHandlerTests
                 charge.Currency)
             .Returns(transactionId);
 
+        acquiringBankClient
+            .AuthorizePaymentAsync(transactionId)
+            .Throws(new AcquiringBankClientException("INSUFFICIENT_FUNDS"));
 
         var request = new ProcessPaymentRequest(
             merchantId,
@@ -74,10 +80,14 @@ public class ProcessPaymentRequestHandlerTests
 
         // Act
 
-        await handler.Handle(request, default);
+        var response = await handler.Handle(request, default);
 
         // Assert
+        Assert.True(response.IsT0);
+        Assert.IsType<UnableToProcessPaymentError>(response.AsT0);
+
         await acquiringBankClient
+            .Received()
             .IssuePaymentAsync(
                 merchantId,
                 card.Number,
@@ -86,11 +96,10 @@ public class ProcessPaymentRequestHandlerTests
                 card.ExpiryDate.Month,
                 card.ExpiryDate.Year,
                 charge.Amount,
-                charge.Currency)
-            .Received();
-        await acquiringBankClient.VerifyPaymentAsync(transactionId).Received();
-        await acquiringBankClient.AuthorizePaymentAsync(transactionId).Received();
-        await acquiringBankClient.ProcessPaymentAsync(transactionId).Received();
+                charge.Currency);
+        await acquiringBankClient.Received().VerifyPaymentAsync(transactionId);
+        await acquiringBankClient.Received().AuthorizePaymentAsync(transactionId);
+        await acquiringBankClient.DidNotReceive().ProcessPaymentAsync(transactionId);
 
     }
 }
