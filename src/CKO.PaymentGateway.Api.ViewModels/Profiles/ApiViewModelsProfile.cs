@@ -17,7 +17,7 @@ public class ApiViewModelsProfile : Profile
                 var card = new Card(
                     request.Card.Number,
                     request.Card.SecurityCode,
-                    new (month, year),
+                    new(month, year),
                     request.Card.Holder);
                 var charge = new PaymentCharge(request.Charge.Amount, request.Charge.Currency);
                 PaymentDescription description = request.Description;
@@ -43,7 +43,7 @@ public class ApiViewModelsProfile : Profile
             .ForMember(dst => dst.Operation, opt => opt.MapFrom((src, _) => src.Operation.Code));
     }
 
-    private static MaskedCardJsonResponse ToMaskedCardJsonResponse(Payment payment)
+    public static MaskedCardJsonResponse ToMaskedCardJsonResponse(Payment payment)
     {
         // Converts the partial card number representation into a pretty masked value.
         // Not optimized for performance in any way.
@@ -62,6 +62,63 @@ public class ApiViewModelsProfile : Profile
                                         payment.PartialCardNumber.NumberLength - PartialCardNumber.ExactAmountOfDigits));
         maskedNumber += payment.PartialCardNumber.PartialNumber;
         maskedNumber = Regex.Replace(maskedNumber, $".{{{groupSize}}}", "$0 ").TrimEnd();
+
+        return new MaskedCardJsonResponse
+        {
+            Number = maskedNumber,
+            Holder = payment.CardHolder,
+            ExpiryDate = $"{payment.CardExpiryDate.Month:00}/{payment.CardExpiryDate.Year:00}",
+        };
+    }
+
+    public static MaskedCardJsonResponse BetterToMaskedCardJsonResponse(Payment payment)
+    {
+        // Converts the partial card number representation into a pretty masked value.
+        // A better version of ToMaskedCardJsonResponse this will be used to compare on the performance tests
+        // Example:
+        //      Length: 16, PartialNumber: 1234.
+        // Result:
+        //      **** **** **** 1234
+
+        const int groupSize = 4;
+        const char maskedCharacter = '*';
+        var length = payment.PartialCardNumber.NumberLength;
+        var spaces = (byte)(Math.Ceiling(length / (double)groupSize)-1);
+        int lastMaskedPosition = -1; 
+        if (length % groupSize == 0)
+        {
+            lastMaskedPosition = 0;
+        }
+        length += spaces;
+        var strArray = new char[length];
+        var partialNumber = payment.PartialCardNumber.PartialNumber;
+        lastMaskedPosition += length - PartialCardNumber.ExactAmountOfDigits;
+        var counter = 0;
+        for (var i = 0; i < lastMaskedPosition; i++)
+        {
+            if (counter == 4)
+            {
+                strArray[i] = ' ';
+                counter = 0;
+                continue;
+            }
+
+            strArray[i] = maskedCharacter;
+            counter++;
+        }
+        for (int i = 0, j=lastMaskedPosition; i < PartialCardNumber.ExactAmountOfDigits; i++, j++)
+        {
+            if (counter == 4)
+            {
+                strArray[j] = ' ';
+                counter = 0;
+                j++;
+            }
+            strArray[j] = partialNumber[i];
+            counter++;
+        }
+
+        var maskedNumber = new string(strArray);
 
         return new MaskedCardJsonResponse
         {
