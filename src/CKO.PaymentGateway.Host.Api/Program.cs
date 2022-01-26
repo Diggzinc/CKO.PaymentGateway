@@ -19,8 +19,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using OneOf;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
 using RockLib.HealthChecks.AspNetCore.ResponseWriter;
 using Serilog;
+using Serilog.Enrichers.Span;
 using Serilog.Events;
 using Serilog.Exceptions;
 
@@ -109,12 +113,19 @@ Log.Logger = new LoggerConfiguration()
     .Enrich.WithAssemblyVersion()
     .Enrich.WithClientIp()
     .Enrich.WithClientAgent()
+    .Enrich.WithSpan()
+        // this piece is commented out because it was only for demonstration purposes
+        // since the logs are not captured by an out of process mechanism such as fluentbit/fluentd
+        // they would not serve much purpose for now.
+        //.WriteTo.File(
+        //        new CompactJsonFormatter(),
+        //        "./logs/logs.json",
+        //        rollingInterval: RollingInterval.Day,
+        //        fileSizeLimitBytes: (int)1e+7)
         .WriteTo.Console()
         .MinimumLevel.Is(LogEventLevel.Information)
         .MinimumLevel.Override(LoggerSource.ExceptionHandlerMiddleware, LogEventLevel.Fatal)
     .CreateLogger();
-;
-;
 
 builder.Host.UseSerilog();
 builder.Services
@@ -124,6 +135,34 @@ builder.Services
         provider.AddSerilog();
     });
 
+// Add Metrics
+builder.Services.AddOpenTelemetryMetrics(config =>
+{
+    config.AddHttpClientInstrumentation();
+    config.AddAspNetCoreInstrumentation();
+    config.AddMeter("PaymentGatewayMetrics");
+    config.AddConsoleExporter();
+});
+
+// Add Tracing
+builder.Services.AddOpenTelemetryTracing(config =>
+{
+    config.AddHttpClientInstrumentation();
+    config.AddAspNetCoreInstrumentation();
+    config.AddSource("PaymentGatewayActivitySource");
+    config.AddConsoleExporter();
+});
+
+// Configure open telemetry logging
+builder.Logging.AddOpenTelemetry(config =>
+{
+    config.IncludeFormattedMessage = true;
+    config.IncludeScopes = true;
+    config.ParseStateValues = true;
+    config.AddConsoleExporter();
+});
+
+// Add Model Validation
 builder.Services
     .AddFluentValidation(config =>
     {
@@ -137,6 +176,7 @@ builder.Services
             (_, member, _) => ToPascalCase(member.Name);
     });
 
+// Add Payment Gateway Services
 builder.Services
     .AddMediatR(typeof(PaymentGatewayServicesAnchor));
 builder.Services
@@ -145,12 +185,13 @@ builder.Services
         ProcessPaymentRequestLoggingBehavior
     >();
 
+// Add Model Mappers
 builder.Services
     .AddAutoMapper(
         typeof(ApiViewModelsAnchor),
         typeof(PaymentGatewayServicesAnchor));
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Add Swagger
 builder.Services
     .AddEndpointsApiExplorer()
     .AddSwaggerGen();

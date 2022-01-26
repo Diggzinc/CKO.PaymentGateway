@@ -5,8 +5,8 @@ namespace CKO.PaymentGateway.Services.Entities;
 #pragma warning disable CS8618
 public class PaymentGatewayContext : DbContext
 {
-    public DbSet<PaymentEntity> Payments { get; set; }
-    public DbSet<PaymentOperationRecordEntity> PaymentOperationRecords { get; set; }
+    public virtual DbSet<PaymentEntity> Payments { get; set; }
+    public virtual DbSet<PaymentOperationRecordEntity> PaymentOperationRecords { get; set; }
 
     public PaymentGatewayContext(DbContextOptions<PaymentGatewayContext> options) : base(options)
     {
