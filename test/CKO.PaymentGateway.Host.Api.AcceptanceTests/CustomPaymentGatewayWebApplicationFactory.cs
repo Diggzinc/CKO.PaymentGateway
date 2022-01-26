@@ -39,6 +39,7 @@ internal class CustomPaymentGatewayWebApplicationFactory : WebApplicationFactory
             var logger = scopedServices
                 .GetRequiredService<ILogger<CustomPaymentGatewayWebApplicationFactory>>();
 
+            context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
 
             try
