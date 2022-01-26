@@ -19,11 +19,11 @@ internal class CustomPaymentGatewayWebApplicationFactory : WebApplicationFactory
 
         builder.ConfigureServices(services =>
         {
-            var descriptor = services.Single(
+            var databaseDescriptor = services.Single(
                 d => d.ServiceType ==
                      typeof(DbContextOptions<PaymentGatewayContext>));
 
-            services.Remove(descriptor);
+            services.Remove(databaseDescriptor);
 
             services.AddDbContext<PaymentGatewayContext>(options =>
             {
