@@ -56,29 +56,29 @@ public class ProcessPaymentRequestHandler
 
             transactionId = await ProcessPaymentAsync(paymentId, transactionId, cancellationToken);
 
+            await _context.SaveChangesAsync(cancellationToken);
+
             return new ProcessPaymentResponse(paymentId);
         }
         catch (AcquiringBankClientException exception)
         {
-            var afterRecord =
+            var failedRecord =
                 new PaymentOperationRecord(
                     Guid.NewGuid(),
                     DateTimeOffset.Now,
-                    PaymentOperation.Processed,
+                    PaymentOperation.Failed,
                     new Dictionary<string, string>
                     {
                         [TransactionIdKey] = transactionId.ToString(),
                         [ReasonKey] = exception.Reason
                     });
-            var afterEntity = _mapper.Map<PaymentOperationRecordEntity>((paymentId, afterRecord));
+            var afterEntity = _mapper.Map<PaymentOperationRecordEntity>((paymentId, failedRecord));
 
             await _context.PaymentOperationRecords.AddAsync(afterEntity, cancellationToken);
 
-            return new UnableToProcessPaymentError(paymentId, exception.Reason);
-        }
-        finally
-        {
             await _context.SaveChangesAsync(cancellationToken);
+
+            return new UnableToProcessPaymentError(paymentId, exception.Reason);
         }
     }
 

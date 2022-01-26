@@ -49,7 +49,7 @@ services:
       - ISSUER_KEY=your-256-bit-secret
       - ACQUIRING_BANK_API_ENDPOINT=http://mock_acquiring_bank_api:${MOCK_ACQUIRING_BANK_API_PORT}
       - ACQUIRING_BANK_API_KEY=some-api-key
-      - CONNECTION_STRING=Host=database,${POSTGRES_PORT};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      - CONNECTION_STRING=Host=database:${POSTGRES_PORT};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
     profiles: ["visual_studio_dev"]
     depends_on: [migrations]
 
