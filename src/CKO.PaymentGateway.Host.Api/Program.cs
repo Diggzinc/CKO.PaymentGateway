@@ -34,7 +34,7 @@ var configuration = new PaymentGatewayApiConfiguration(
     builder.Configuration.GetValue<string>(EnvironmentVariable.AcquiringBankApiKey),
     builder.Configuration.GetValue<string>(EnvironmentVariable.ConnectionString));
 
-builder.Services.AddSingleton<PaymentGatewayApiConfiguration>(configuration);
+builder.Services.AddSingleton(configuration);
 
 // Add services to the container.
 builder.Services.AddHttpContextAccessor();

@@ -32,6 +32,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include ="CKO.PaymentGateway.Host.Api.AcceptanceTests"/>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CKO.PaymentGateway.Api.ViewModels\CKO.PaymentGateway.Api.ViewModels.csproj" />
     <ProjectReference Include="..\CKO.PaymentGateway.Services\CKO.PaymentGateway.Services.csproj" />
   </ItemGroup>
