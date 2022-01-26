@@ -18,9 +18,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
+using Npgsql;
 using OneOf;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using RockLib.HealthChecks.AspNetCore.ResponseWriter;
 using Serilog;
@@ -140,7 +142,7 @@ builder.Services.AddOpenTelemetryMetrics(config =>
 {
     config.AddHttpClientInstrumentation();
     config.AddAspNetCoreInstrumentation();
-    config.AddMeter("PaymentGatewayMetrics");
+    config.AddMeter("PaymentGatewayApiMetrics");
     config.AddConsoleExporter();
 });
 
@@ -149,8 +151,15 @@ builder.Services.AddOpenTelemetryTracing(config =>
 {
     config.AddHttpClientInstrumentation();
     config.AddAspNetCoreInstrumentation();
-    config.AddSource("PaymentGatewayActivitySource");
+    config.AddNpgsql();
+    config.AddSource("PaymentGatewayApiActivitySource");
     config.AddConsoleExporter();
+
+    config.SetResourceBuilder(
+        ResourceBuilder.CreateDefault()
+            .AddService(
+                serviceName: "PaymentGatewayApi",
+                serviceVersion: "1.0"));
 });
 
 // Configure open telemetry logging
