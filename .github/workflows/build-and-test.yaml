@@ -20,3 +20,11 @@ jobs:
       run: dotnet build --no-restore CKO.PaymentGateway.Challenge.sln
     - name: Run Unit Tests
       run: dotnet test --no-build --verbosity normal --filter FullyQualifiedName~.UnitTests CKO.PaymentGateway.Challenge.sln
+    - name: Run Acceptance Tests
+      run: dotnet test --no-build --verbosity normal --filter FullyQualifiedName~.AcceptanceTests CKO.PaymentGateway.Challenge.sln
+    - name: Run Architecture Tests
+      run: dotnet test --no-build --verbosity normal --filter FullyQualifiedName~.ArchitectureTests CKO.PaymentGateway.Challenge.sln
+
+    # cannot run this yet because docker on github actions takes time to get right :)
+    # - name: Run Integration Tests
+    #   run: dotnet test --no-build --verbosity normal --filter FullyQualifiedName~.IntegrationTests CKO.PaymentGateway.Challenge.sln
