@@ -1,3 +1,7 @@
+<p align="center">
+<img  src="./assets/logo.png" height="250">
+</p>
+
 # CKO Payment Gateway
 
 [![Build and Test .NET](https://github.com/Diggzinc/CKO.PaymentGateway/actions/workflows/build-and-test.yaml/badge.svg)](https://github.com/Diggzinc/CKO.PaymentGateway/actions/workflows/build-and-test.yaml)
@@ -211,8 +215,6 @@ If you want to see an in-depth explanation of the domain models, please refer to
 }
 ```
 </details>
-
-
 
 ## The Payment Gateway API
 
@@ -538,24 +540,142 @@ Just change the response types from the `2xx` range to another range, for ex.: `
 This section shows a collection of some thoughts I would like to convey but were not adequate to be included in the other sections.
 ### Comments on the Tests
 
+As mentioned previously, I firmly believe testing is paramount, my father is a carpenter and he always says `measure twice, cut once`. As a rule of thumb I carry this over to testing as well.
+
+While this holds true to my viewpoints about software development the same could not be done thoroughly for the time frame of delivery of this demo compared to the whole scope of the project.
+
+Therefore the following comments showcase the main points I would like to convey for each test suite type and why they are important.
+
 #### Unit Tests
+
+These are the conventional unit tests that any developer should be familiar with. The only thing to point out is the usage of libraries such as `FluentAssertions` and `NSubstitute` to improve the code readability/maintainability.
+
+> 🔎 see [FluentAssertions](https://fluentassertions.com/)
+>
+> 🔎 see [NSubstitute](https://nsubstitute.github.io/)
+
 #### Integration Tests
+
+The usage of Integration Tests in the scope of this project was to showcase the integration of modules that actually communicate with external systems (both the database and the Acquiring Bank API).
+
+In order to achieve this, two approaches were used both leveraging the `XUnit` `ICollectionFixture<T>`.
+
+The **database** integration was achieved by spinning up an ephemeral `docker-compose` stack with both the `database container` and the `migrations container`. The stack would be launched automatically at the start of the tests, seeded with data and then the tests would start as soon as the stack was considered `ready`.
+
+The **acquiring bank api** was integrated through the usage on an ephemeral `WireMock Server` where the request matching was mutated according to the use cases for the tests. This was done in order to mutate the responses to inject errors of the payment process.
+
+> 🔎 see [WireMock.NET](https://github.com/WireMock-Net/WireMock.Net)
+>
+> 🔎 see [FluentDocker](https://github.com/mariotoffia/FluentDocker)
+
 #### Acceptance Tests
+
+The purpose of this test suite is to test the application in a Behavior Driven Design (**BDD**) approach.
+
+Levering SpecFlow we can write tests that target the actual Use Cases while writing them in a common language that is understandable by both technical and non-technical people.
+
+> 🔎 see [SpecFlow](https://specflow.org/)
+
+The implemented test suite leverages the usage of the dotnet `WebApplicationFactory` which emulates the actual instance of the service, while being capable of overriding certain dependencies.
+
+In this demo one of the main reasons to use `EF Core 6` was to be able to switch the `dbcontext` to an `InMemory` implementation so we could seed the data to our own accord in order to fulfill the use cases for the tests while not requiring to use extensive mocking of the objects.
 #### Architecture Tests
+The goal of the architecture tests suite is to ensure the cohesion of a architecture principles when it comes to application layering.
+
+With this type of test suite we can check dependencies between classes, members, interfaces, and more and assert if there is some rule broken on code structure.
+>  🔎 see [NetArchTest](https://github.com/BenMorris/NetArchTest) 
 #### Performance Tests
 
+While the usage of performance tests in the context of this demo was to showcase the difference in performance between two approaches that generate the same end result, my expectation for this test suite is to monitor application blocks that are crucial to the application critical use cases.
+
+With a targeted suite of performance tests we can pinpoint degradation or improvements of the whole application and make more informed decisions, if issues arise.
+
+> 🔎 see [BenchmarkDotNet](https://benchmarkdotnet.org/articles/overview.html)
+
+The following table just shows the result of the performance tests for this demo, for curiosity sake.
+
+``` ini
+
+BenchmarkDotNet=v0.13.1, OS=Windows 10.0.19042.1466 (20H2/October2020Update)
+Intel Core i7-9750H CPU 2.60GHz, 1 CPU, 12 logical and 6 physical cores
+.NET SDK=6.0.200-preview.21617.4
+  [Host]   : .NET 6.0.1 (6.0.121.56705), X64 RyuJIT
+  .NET 6.0 : .NET 6.0.1 (6.0.121.56705), X64 RyuJIT
+
+Job=.NET 6.0  Runtime=.NET 6.0  
+
+```
+|                         Method |       Mean |   Error |  StdDev |      Min |        Max |     Median | Kurtosis | Ratio |  Gen 0 | Allocated |
+|------------------------------- |-----------:|--------:|--------:|---------:|-----------:|-----------:|---------:|------:|-------:|----------:|
+|       ToMaskedCardJsonResponse | 1,004.9 ns | 9.69 ns | 8.09 ns | 994.0 ns | 1,020.9 ns | 1,003.9 ns |    2.224 |  1.00 | 0.0973 |     616 B |
+| BetterToMaskedCardJsonResponse |   199.9 ns | 4.03 ns | 8.13 ns | 186.4 ns |   214.1 ns |   199.2 ns |    1.445 |  0.19 | 0.0253 |     160 B |
+
+
 ### Comments on Observability
+
+While I consider observability one cornerstone of a good application the time frame did not allow to go too much in-depth in it therefore they are just shown as raw console outputs. In the two following subsections I will showcase the intent I had for them and why they didn't go through in the demo.
+
 #### Logging
+
+While the application does have logging the logs being outputted to the console a a human readable format.
+
+When it comes to logging the application principle is for the logs to be processed in an out-of-process fashion with as much context as possible therefore the logs should be way more verbose and adapted to a more machine friendly format, such as JSON. Serilog would cover that easily.
+
+The choice between rolling files or console output would depend on the deployment infrastructure, if we were to be on Kubernetes console logging would be the better approach since Kubernetes would then handle the writing to disk.
+
+After that the files would be collected by a log processor/forwarder such as FluentBit (be it a sidecar or a DaemonSet on Kubernetes) and sent to an aggregator which would then parse the data and sink it to the desired platform (ex.: Elasticsearch).
+
+This approach was not showcased on the demo, because it would make the `docker-compose` stack a little bit too heavy for the intended purpose, but it could be achieved with ease (been there, done that 😜).
+
 #### Tracing
+
+The same rationale applied to the logs would work for the tracing, the collectors would be working out-of-process and the exporters would send out the data to them. This was also not included in the `docker-compose` stack due to the added burden of execution.
 ### Comments on Responsibilities
+
+While the application models have some opinionated regarding the format of that that they support, as mentioned in the code comments of those classes, I firmly believe that model validation should be delegated to actual services.
+
+See for example the card number conditions to infer if it's a `Visa`, `MasterCard` and so on, there is to much volatility in that and it's too error prone to be captured under the responsibility of the Payment Gateway.
+
+While that could still be imported code packages in order to not pay the performance penalty of network access to an external service, I think the demo that I've presented does more that it should do in that regard, but again it was to showcase stuff.
 
 ### Comments on Code Style / Architecture
 
-granular packages, microsoft approach
+While trying to have an hexagonal approach to application architecture, I'm fond of the approach that Microsoft has been having with their NuGet packages. 
+
+Making the packages as granular as possible while keeping the implementation and abstractions separated from each project. 
+
+I've seen too many projects creating an `Infrastructure` project and shoving every dependency in there such as `Redis`, `RabbitMQ`, `AWS` stuff and so on. 
+
+That's in my point of view a huge error since it breaks the application modularity.
+That does not necessary mean we have to create a abstraction over an already existing interface, because with the `Decorator Pattern` we can salvage that for example.
 
 ## Areas for Improvement
+**CI/CD**
 
-  - resiliency
-  - cloud provider deployments
-  - parameter store for configuration
-  - database encryption
+While this project has a github actions workflow, it's just... close to nothing.
+
+**Resiliency**
+
+There is none, only the `/health` endpoint that could be used by the consumers to not hammer away at our application. 
+
+But the whole idea would be to had circuit breaking mechanisms to fast respond to requests if the application is in a degraded state. For example if the acquiring bank was down we could still serve the payment detail requests without an issue, but we could short circuit the payment processing and deliver a fast response saying that the request could not be fulfilled while no stressing the already poorly performant Acquiring Bank API.
+
+Same thing would work for retries in case transient failures to requests with an exponential backoff before opening the circuit.
+
+**Cloud Provider Deployments**
+
+Did not touch on that, even though AWS is my strong suit, I would at least try to showcase the usage of **CDK** to delivery clean, versioned and application-like Infrastructure as Code (**IaC**). 
+
+**Parameters/Secrets for configuration**
+
+The configuration it done through environment variables on this demo, while that's ok in the context of containers and Kubernetes. I would have liked to have them with more dynamism through the usage of a dedicated service for the use cases (ex.: `ParameterStore` and `SecretsManager`).
+
+**Authentication/Authorization**
+
+It's done through just the symmetric key usage and the claim based authorization on this demo. Then again I believe this should be done through external services such as a proper Identity Provider for token issuing and a dedicated service for Authorization such as `Open Policy Agent`.
+
+**Many other things**
+
+As the title says... many other things... this was just a one week project, so there is a lot that is missing.
+
+
