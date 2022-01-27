@@ -4,10 +4,22 @@
 
 CKO take-home challenge
 
+## Prerequisites
+
+Software 
+- Docker version 20.10.12, build e91ed57 
+- dotnet 6.0.200-preview.22055.15
+- Visual Studio Community Version 17.1.0 Preview 4.0 (with ASP.NET and web development workload)
+
+The following ports should be available on your local machine, although configurable it's advised to just use the defaults.
+
 ## Build Solution (command line)
 <p align="center">
 <a href="https://asciinema.org/a/464738"><img  src="https://asciinema.org/a/464738.svg"></a>
 </p>
+
+
+
 ## Run tests (command line)
 
 All Tests
@@ -25,15 +37,31 @@ Performance Tests
 <a href="https://asciinema.org/a/464740"><img  src="https://asciinema.org/a/464740.svg"></a>
 </p>
 
-## Run without visual studio
+
+## Run Payment Gateway Application
+
+### Run with `dotnet-cli`
+
 <p align="center">
 <a href="https://asciinema.org/a/464741"><img  src="https://asciinema.org/a/464741.svg"></a>
 </p>
 
-## Setup Infrastructure
+### Visual Studio (with `docker-compose` project)
+
+<p align="center">
+<img  src="./assets/vs-compose.gif">
+</p>
+
+### Visual Studio standalone 
+#### Setup Infrastructure
 <p align="center">
 <a href="https://asciinema.org/a/464739"><img  src="https://asciinema.org/a/464739.svg"></a>
 </p>
+
+
+
+
+
 
 ```
 docker-compose --profile infrastructure up --no-build --detach
