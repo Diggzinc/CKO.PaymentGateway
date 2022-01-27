@@ -1,0 +1,17 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "composeLaunchAction": "LaunchBrowser",
+      "composeLaunchServiceName": "cko.paymentgateway.host.api",
+      "composeProfile": {
+        "includes": [
+          "visual_studio_dev",
+          "infrastructure"
+        ]
+      },
+      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/health",
+      "commandVersion": "1.0"
+    }
+  }
+}

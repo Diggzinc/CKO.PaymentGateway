@@ -1,0 +1,131 @@
+@api-endpoint= http://localhost:5000
+@api-version=v1
+
+# {
+#   "name": "John Doe",
+#   "merchantId": "8005d917-3c6b-4b48-adc8-0ebe0e6dbc94"
+# }
+#
+# This merchant already has two entries for payments under seeded by the migrations for demonstration purposes.
+#
+# payment-id: 606077e8-8f06-4f79-a6a1-12e48f3e33a1 (successful payment)
+# payment-id: 967190ba-3877-4a4a-8163-11614f55080b (failed payment)
+@token-a=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSm9obiBEb2UiLCJtZXJjaGFudElkIjoiODAwNWQ5MTctM2M2Yi00YjQ4LWFkYzgtMGViZTBlNmRiYzk0In0.0V4hnefnc9sDWcgcdlhqawRfsz-fn4I5SqE3jcvuJyo
+
+# {
+#   "name": "Adidas",
+#   "merchantId": "ed962527-eb35-44a9-9c09-b75af6c84ac2"
+# }
+@token-b=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiQWRpZGFzIiwibWVyY2hhbnRJZCI6ImVkOTYyNTI3LWViMzUtNDRhOS05YzA5LWI3NWFmNmM4NGFjMiJ9.dSGWjei4fg6jbhQ-Hysuok6F7967thIifSetVoy1NlY
+
+# Alternate between token-a or token-b to switch merchant context for the requests.
+@token={{token-a}}
+
+###
+# EXAMPLE 1
+# Process a payment
+# valid request
+POST {{api-endpoint}}/api/{{api-version}}/payments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "card": {
+    "number": "1111 1111 1111 1235",
+    "securityCode": "111",
+    "expiryDate": "01/27",
+    "holder": "John Doe"
+  },
+  "charge": {
+    "currency": "EUR",
+    "amount": 0.01
+  },
+  "description": "AMZN Purchase"
+}
+
+###
+# EXAMPLE 2
+# Process a payment
+# invalid properties
+POST {{api-endpoint}}/api/{{api-version}}/payments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "card": {
+    "number": "1111 AA 1111 1111 11111111",
+    "securityCode": "A",
+    "expiryDate": "21/20",
+    "holder": "  "
+  },
+  "charge": {
+    "currency": "XXX",
+    "amount": 0.00
+  },
+  "description": "  "
+}
+
+###
+# EXAMPLE 3
+# Process a payment
+# invalid properties
+POST {{api-endpoint}}/api/{{api-version}}/payments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "card": {},
+  "charge": {
+    "currency": null
+  },
+  "description": null
+}
+
+###
+# EXAMPLE 4
+# get a payment by id
+# exists for token-a
+GET {{api-endpoint}}/api/{{api-version}}/payments/606077e8-8f06-4f79-a6a1-12e48f3e33a1
+Authorization: Bearer {{token}}
+
+###
+# EXAMPLE 5
+# get a payment by id
+# exists for token-a but has a record indicating failure after 'Authorizing'
+GET {{api-endpoint}}/api/{{api-version}}/payments/967190ba-3877-4a4a-8163-11614f55080b
+Authorization: Bearer {{token}}
+
+###
+# EXAMPLE 6
+# get a payment by id
+# this payment does not exist for any merchant.
+GET {{api-endpoint}}/api/{{api-version}}/payments/4bdb49ee-cd4a-45d7-b104-64b9f32ba28b
+Authorization: Bearer {{token}}
+
+###
+# EXAMPLE 7
+# Process a payment
+# invalid request because card has expired.
+POST {{api-endpoint}}/api/{{api-version}}/payments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "card": {
+    "number": "1111 1111 1111 1111",
+    "securityCode": "111",
+    "expiryDate": "12/21",
+    "holder": "John Doe"
+  },
+  "charge": {
+    "currency": "EUR",
+    "amount": 0.01
+  },
+  "description": "AMZN Purchase"
+}
+
+###
+# EXAMPLE 8
+# Get health of the service
+# Try to change to stop the database or stop the Acquiring Bank API mock.
+GET {{api-endpoint}}/health
