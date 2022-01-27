@@ -28,7 +28,20 @@
       - [Run with `docker-compose` project](#run-with-docker-compose-project)
       - [Run with standalone `CKO.PaymentGateway.Host.Api` project](#run-with-standalone-ckopaymentgatewayhostapi-project)
   - [How to use Payment Gateway API](#how-to-use-payment-gateway-api)
-  - [Relevant Technical Details/Considerations](#relevant-technical-detailsconsiderations)
+    - [Make requests](#make-requests)
+    - [Introduce Payment Failures](#introduce-payment-failures)
+  - [Relevant Technical Comments/Considerations](#relevant-technical-commentsconsiderations)
+    - [Comments on the Tests](#comments-on-the-tests)
+      - [Unit Tests](#unit-tests)
+      - [Integration Tests](#integration-tests)
+      - [Acceptance Tests](#acceptance-tests)
+      - [Architecture Tests](#architecture-tests)
+      - [Performance Tests](#performance-tests-1)
+    - [Comments on Observability](#comments-on-observability)
+      - [Logging](#logging)
+      - [Tracing](#tracing)
+    - [Comments on Responsibilities](#comments-on-responsibilities)
+    - [Comments on Code Style / Architecture](#comments-on-code-style--architecture)
   - [Areas for Improvement](#areas-for-improvement)
 
 ## Prerequisites
@@ -95,7 +108,7 @@ After some research by payment cards in [general](https://baymard.com/checkout-u
 
 The following examples refer to the API models (view models) that are exposed to the user and not the domain models used by the application, which are translated from these view models.
 
-If you want to see an in-depth explanation of the domain models, please refer to the documentation under the [CKO.PaymentGateway.Models](../src/CKO.PaymentGateway.Models) project.
+If you want to see an in-depth explanation of the domain models, please refer to the documentation under the `CKO.PaymentGateway.Models` project.
 
  In that project you can also find the domain constraints such as the allowed length for the number of a card, supported currencies among other things.
 
@@ -494,36 +507,54 @@ Click on the image to view the **demo**
 
 ## How to use Payment Gateway API
 
-## Relevant Technical Details/Considerations
+
+### Make requests
+
+In order to use the API Gateway after it's running you can look at the [requests.http](./requests.http) file for reference.
+
+If you want to actually use those requests make sure to use Visual Studio Code with the [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) extension.
+
+The file already contains two valid token's to interact with the API in which one user already has data.
+
+If you want to generate your own tokens use the [JWT.io](https://jwt.io/) website with the following payload, change the values accordingly, and use the following secret `your-256-bit-secret` (which is actually the default one the website 😉) 
+
+```json
+{   
+    "name": "Adidas",
+    "merchantId": "ed962527-eb35-44a9-9c09-b75af6c84ac2"
+}
+```
+
+### Introduce Payment Failures
+
+In order to introduce payment failures you want to change the Acquiring Bank API mocks. 
+
+For that, you can use the [Mockoon](https://mockoon.com/) Client in order to change the [acquiring-bank-mock-api.json](./acquiring-bank-mock-api.json) file.
+
+Just change the response types from the `2xx` range to another range, for ex.: `4xx` range for a given endpoint and then try to issue a payment.
+
+## Relevant Technical Comments/Considerations
+
+This section shows a collection of some thoughts I would like to convey but were not adequate to be included in the other sections.
+### Comments on the Tests
+
+#### Unit Tests
+#### Integration Tests
+#### Acceptance Tests
+#### Architecture Tests
+#### Performance Tests
+
+### Comments on Observability
+#### Logging
+#### Tracing
+### Comments on Responsibilities
+
+### Comments on Code Style / Architecture
+
+granular packages, microsoft approach
+
 ## Areas for Improvement
 
-
-- explain features
-- explain models/API
-  - explain authentication
-- explain requirements
-- explain architecture
-- explain how to run
-  - docker-compose project
-  - docker-compose standalone infrastructure
-    - mockoon outside
-  - only service
-- explain how to use (requests.http)
-- explain validations
-- explain tests
-  - architecture
-  - performance
-    - add diagram from a run
-  - acceptance (BDD)
-    - WebFactory
-  - validator (fluent validation)
-  - mapping
-  - unit tests
-  - Integration
-    - docker-compose ephemeral
-- explain logging (fluentbit)
-- explain tracing
-- explain other considerations
   - resiliency
   - cloud provider deployments
   - parameter store for configuration
